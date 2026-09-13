@@ -38,6 +38,7 @@ public class ApiExceptionHandler {
                 : e.getMessage();
         return error(HttpStatus.BAD_REQUEST, message);
     }
+
     private ResponseEntity<ErrorResponse> error(HttpStatus status, String message) {
         return ResponseEntity.status(status).body(new ErrorResponse(Instant.now(), status.value(), status.getReasonPhrase(), message));
     }

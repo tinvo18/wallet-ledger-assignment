@@ -53,4 +53,5 @@ public class LedgerTransactionEntity {
         this.referenceId = referenceId;
         this.createdAt = Instant.now();
     }
+
 }
