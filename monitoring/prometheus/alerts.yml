@@ -1,0 +1,25 @@
+groups:
+  - name: wallet-ledger
+    rules:
+      - alert: WalletLedgerDown
+        expr: up{job="wallet-ledger"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Wallet Ledger is unavailable
+          description: Prometheus cannot scrape wallet-ledger for more than one minute.
+
+      - alert: WalletLedgerHighServerErrorRate
+        expr: |
+          (
+            sum(rate(http_server_requests_seconds_count{job="wallet-ledger",status=~"5.."}[5m]))
+            /
+            sum(rate(http_server_requests_seconds_count{job="wallet-ledger"}[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High HTTP 5xx error rate
+          description: More than 5 percent of wallet-ledger requests returned 5xx during the last five minutes.

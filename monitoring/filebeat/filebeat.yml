@@ -1,0 +1,31 @@
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      host: unix:///var/run/docker.sock
+      templates:
+        - condition:
+            equals:
+              docker.container.labels.com.docker.compose.service: app
+          config:
+            - type: container
+              containers:
+                - /var/lib/docker/containers/${data.docker.container.id}/*.log
+              processors:
+                - add_fields:
+                    target: ''
+                    fields:
+                      service.name: wallet-ledger
+
+processors:
+  - add_docker_metadata:
+      host: unix:///var/run/docker.sock
+      match_source: true
+
+setup.ilm.enabled: false
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  index: "wallet-ledger-%{+yyyy.MM.dd}"
+
+setup.template.name: "wallet-ledger"
+setup.template.pattern: "wallet-ledger-*"
